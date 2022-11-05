@@ -1,0 +1,142 @@
+name: Main Repository Workflow
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+    types:
+    - opened
+    - synchronize
+
+concurrency: diss
+
+jobs:
+  build:
+    name: Build ${{ format('${0}.pdf', matrix.input) }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        input:
+        - main
+        - proposal
+
+    steps:
+    - id: checkout
+      name: Checkout repository
+      timeout-minutes: 5
+      uses: actions/checkout@v3
+
+    - id: install
+      name: Install pdflatex
+      timeout-minutes: 5
+      run: |
+        sudo apt-get install texlive-latex-base texlive-fonts-recommended texlive-fonts-extra texlive-latex-extra
+
+    - id: build
+      name: Checkout repository
+      timeout-minutes: 5
+      run: |
+        pdflatex ${{ format('{0}.tex', matrix.input) }}
+
+    - id: artifact
+      name: Upload PDF as artifact
+      timeout-minutes: 5
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ format('{0}.pdf', matrix.input) }}
+        path: ${{ format('{0}.pdf', matrix.input) }}
+
+  checks:
+    name: Check dissertation requirements
+    runs-on: ubuntu-latest
+
+    needs:
+    - build
+
+    steps:
+    - id: fetch
+      name: Fetch built PDF
+      timeout-minutes: 5
+      uses: actions/download-artifact@v3
+      with:
+        name: main.pdf
+
+    - id: install
+      name: Install tools
+      timeout-minutes: 5
+      run: |
+        sudo apt-get install pdftk texlive-latex-base texlive-latex-extra poppler-utils
+
+    - id: convert
+      name: Convert PDF into other formats
+      timeout-minutes: 5
+      run: |
+        detex main.pdf > main.txt
+        pdftk main.pdf cat 4-end output trimmed.pdf
+        pdftotext -layout trimmed.pdf trimmed.txt
+
+    - id: file-size
+      name: Check output file size
+      timeout-minutes: 5
+      run: |
+        actualsize=$(wc -c < main.pdf)
+        echo "- The size of main.pdf is $actualsize bytes" >> $GITHUB_STEP_SUMMARY
+        if [ $actualsize -ge 15000000 ]; then
+            echo "::error file=main.pdf::File is over 15MB"
+            echo "  :warning: This is over the limit of 15MB" >> $GITHUB_STEP_SUMMARY
+        else
+            echo "  :white_check_mark: This is under the limit of 15MB" >> $GITHUB_STEP_SUMMARY
+        fi
+        echo "" >> $GITHUB_STEP_SUMMARY
+
+    - id: page-count
+      name: Check number of pages
+      timeout-minutes: 5
+      run: |
+        pages=$(pdftk main.pdf dump_data | grep "NumberOfPages" | cut -d":" -f2)
+        echo "- main.pdf has $pages pages" >> $GITHUB_STEP_SUMMARY
+        if [ $pages -g 40 ]; then
+            echo "::error file=main.pdf::File has more than 40 pages"
+            echo "  :warning: This is over the limit of 40" >> $GITHUB_STEP_SUMMARY
+        else
+            echo "  :white_check_mark: This is under the limit of 40" >> $GITHUB_STEP_SUMMARY
+        fi
+        echo "_Note: this does not include appendices. Check [the official requirements page](https://www.cst.cam.ac.uk/teaching/part-ii/projects/dissertation) for more information._" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+
+    - id: word-count
+      name: Check word count
+      timeout-minutes: 5
+      run: |
+        words=$(cat main.txt | tr -cd '0-9A-Za-z $\tt\backslash$n' | wc -w)
+        echo "- main.pdf has $words words" >> $GITHUB_STEP_SUMMARY
+        if [ $words -g 12000 ]; then
+            echo "::error file=main.pdf::File has more than 12000 words"
+            echo "  :warning: This is over the limit of 12000" >> $GITHUB_STEP_SUMMARY
+        else
+            echo "  :white_check_mark: This is under the limit of 12000" >> $GITHUB_STEP_SUMMARY
+        fi
+        echo "_Note: Words were counted with `detex main.tex | tr -cd '0-9A-Za-z $\tt\backslash$n' | wc -w`. There could be alternative methods that give a different result._" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+
+    - id: personal-information
+      name: Find personal information
+      timeout-minutes: 5
+      run: |
+        # Recommended filters: initials, crsid, names, usernames, college
+        echo "- Looking for personal information (initials, crsid, names, usernames, college)"
+        result = $(grep -i -n -E "mr|john|martin|richards|martinr" trimmed.txt)
+        if [ -n "$result" ]; then
+            echo "::error file=main.pdf::File probably contains personal information"
+            echo "::error file=main.pdf::$result"
+            echo "  :warning: main.pdf contains personal information" >> $GITHUB_STEP_SUMMARY
+        else
+            echo "  :white_check_mark: main.pdf probably doesn't contain any personal information" >> $GITHUB_STEP_SUMMARY
+        fi
+        echo "_Note: This is not a guarantee, this check is just a search for the given keywords_" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
