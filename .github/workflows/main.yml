@@ -15,7 +15,7 @@ concurrency: diss
 
 jobs:
   build:
-    name: Build {{ format('${0}.pdf', matrix.input) }}
+    name: Build ${{ format('{0}.pdf', matrix.input) }}
     runs-on: ubuntu-latest
 
     strategy:
