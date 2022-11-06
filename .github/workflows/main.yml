@@ -106,7 +106,7 @@ jobs:
         else
             echo "  :white_check_mark: This is under the limit of 40" >> $GITHUB_STEP_SUMMARY
         fi
-        echo "_Note: this does not include appendices. Check [the official requirements page](https://www.cst.cam.ac.uk/teaching/part-ii/projects/dissertation) for more information._" >> $GITHUB_STEP_SUMMARY
+        echo "_Note: the limit does not include appendices. Check [the official requirements page](https://www.cst.cam.ac.uk/teaching/part-ii/projects/dissertation) for more information._" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
 
     - id: word-count
@@ -121,7 +121,7 @@ jobs:
         else
             echo "  :white_check_mark: This is under the limit of 12000" >> $GITHUB_STEP_SUMMARY
         fi
-        echo "_Note: Words were counted with `detex main.tex | tr -cd '0-9A-Za-z $\tt\backslash$n' | wc -w`. There could be alternative methods that give a different result._" >> $GITHUB_STEP_SUMMARY
+        echo "_Note: Words were counted with \`detex main.tex | tr -cd '0-9A-Za-z $\tt\backslash$n' | wc -w\`. There could be alternative methods that give a different result._" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
 
     - id: personal-information
@@ -130,7 +130,7 @@ jobs:
       run: |
         # Recommended filters: initials, crsid, names, usernames, college
         echo "- Looking for personal information (initials, crsid, names, usernames, college)"
-        result = $(grep -i -n -E "mr|john|martin|richards|martinr" trimmed.txt)
+        result=$(grep -i -n -E "mr|john|martin|richards|martinr" trimmed.txt)
         if [ -n "$result" ]; then
             echo "::error file=main.pdf::File probably contains personal information"
             echo "::error file=main.pdf::$result"
