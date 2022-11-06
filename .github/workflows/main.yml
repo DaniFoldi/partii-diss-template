@@ -85,12 +85,12 @@ jobs:
       timeout-minutes: 5
       run: |
         actualsize=$(wc -c < main.pdf)
-        echo "- The size of main.pdf is $actualsize bytes" >> $GITHUB_STEP_SUMMARY
+        echo "- The size of main.pdf is **$actualsize bytes**" >> $GITHUB_STEP_SUMMARY
         if [ $actualsize -ge 15000000 ]; then
             echo "::error file=main.pdf::File is over 15MB"
-            echo "  :warning: This is over the limit of 15MB" >> $GITHUB_STEP_SUMMARY
+            echo ":warning: This is over the limit of 15MB" >> $GITHUB_STEP_SUMMARY
         else
-            echo "  :white_check_mark: This is under the limit of 15MB" >> $GITHUB_STEP_SUMMARY
+            echo ":white_check_mark: This is under the limit of 15MB" >> $GITHUB_STEP_SUMMARY
         fi
         echo "" >> $GITHUB_STEP_SUMMARY
 
@@ -99,12 +99,12 @@ jobs:
       timeout-minutes: 5
       run: |
         pages=$(pdftk main.pdf dump_data | grep "NumberOfPages" | cut -d":" -f2)
-        echo "- main.pdf has $pages pages" >> $GITHUB_STEP_SUMMARY
+        echo "- main.pdf has **$pages pages**" >> $GITHUB_STEP_SUMMARY
         if [ $pages -g 40 ]; then
             echo "::error file=main.pdf::File has more than 40 pages"
-            echo "  :warning: This is over the limit of 40" >> $GITHUB_STEP_SUMMARY
+            echo ":warning: This is over the limit of 40" >> $GITHUB_STEP_SUMMARY
         else
-            echo "  :white_check_mark: This is under the limit of 40" >> $GITHUB_STEP_SUMMARY
+            echo ":white_check_mark: This is under the limit of 40" >> $GITHUB_STEP_SUMMARY
         fi
         echo "_Note: the limit does not include appendices. Check [the official requirements page](https://www.cst.cam.ac.uk/teaching/part-ii/projects/dissertation) for more information._" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
@@ -114,12 +114,12 @@ jobs:
       timeout-minutes: 5
       run: |
         words=$(cat main.txt | tr -cd '0-9A-Za-z $\tt\backslash$n' | wc -w)
-        echo "- main.pdf has $words words" >> $GITHUB_STEP_SUMMARY
+        echo "- main.pdf has **$words words**" >> $GITHUB_STEP_SUMMARY
         if [ $words -g 12000 ]; then
             echo "::error file=main.pdf::File has more than 12000 words"
-            echo "  :warning: This is over the limit of 12000" >> $GITHUB_STEP_SUMMARY
+            echo ":warning: This is over the limit of 12000" >> $GITHUB_STEP_SUMMARY
         else
-            echo "  :white_check_mark: This is under the limit of 12000" >> $GITHUB_STEP_SUMMARY
+            echo ":white_check_mark: This is under the limit of 12000" >> $GITHUB_STEP_SUMMARY
         fi
         echo "_Note: Words were counted with \`detex main.tex | tr -cd '0-9A-Za-z $\tt\backslash$n' | wc -w\`. There could be alternative methods that give a different result._" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
@@ -129,14 +129,14 @@ jobs:
       timeout-minutes: 5
       run: |
         # Recommended filters: initials, crsid, names, usernames, college
-        echo "- Looking for personal information (initials, crsid, names, usernames, college)"
+        echo "- Looking for personal information (initials, crsid, names, usernames, college)" >> $GITHUB_STEP_SUMMARY
         result=$(grep -i -n -E "mr|john|martin|richards|martinr" trimmed.txt)
         if [ -n "$result" ]; then
             echo "::error file=main.pdf::File probably contains personal information"
             echo "::error file=main.pdf::$result"
-            echo "  :warning: main.pdf contains personal information" >> $GITHUB_STEP_SUMMARY
+            echo ":warning: main.pdf **contains personal information**" >> $GITHUB_STEP_SUMMARY
         else
-            echo "  :white_check_mark: main.pdf probably doesn't contain any personal information" >> $GITHUB_STEP_SUMMARY
+            echo ":white_check_mark: main.pdf probably doesn't contain any personal information" >> $GITHUB_STEP_SUMMARY
         fi
         echo "_Note: This is not a guarantee, this check is just a search for the given keywords_" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
