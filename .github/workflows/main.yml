@@ -77,7 +77,7 @@ jobs:
       timeout-minutes: 5
       run: |
         detex main.pdf > main.txt
-        pdftk main.pdf cat 4-end output trimmed.pdf
+        pdftk main.pdf cat 3-end output trimmed.pdf
         pdftotext -layout trimmed.pdf trimmed.txt
 
     - id: file-size

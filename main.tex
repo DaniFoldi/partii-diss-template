@@ -9,8 +9,9 @@
 \usepackage{mathtools}
 \usepackage{changepage}
 \usepackage{url}
+\usepackage{blindtext}
 
-\raggedbottom                           % try to avoid widows and orphans
+%\raggedbottom                           % try to avoid widows and orphans
 \sloppy
 \clubpenalty1000%
 \widowpenalty1000%
@@ -29,7 +30,7 @@
 % Title
 
 
-\pagestyle{empty}
+\thispagestyle{empty}
 
 \rightline{\LARGE \textbf{\mfullname}}
 
@@ -39,7 +40,7 @@
 \textbf{\mtitle} \\[5mm]
 \mexamination \\[5mm]
 \mcollege \\[5mm]
-\today  % today's date
+\mdate  % today's date
 \end{center}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -47,18 +48,28 @@
 
 \pagestyle{plain}
 
+\newpage
+\newpage
+\section*{Declaration of originality}
+
+I, \mfullname{} of \mcollege, being a candidate for Part II of the Computer Science Tripos, hereby declare that this dissertation and the work described in it are my own work, unaided except as may be specified below, and that the dissertation does not contain material that has already been used to any substantial extent for a comparable purpose. \mconsent
+
+\bigskip
+\leftline{Signed \msignature}
+\bigskip
+\leftline{Date \today}
+
 \chapter*{Proforma}
 
 {\large
 \begin{tabular}{ll}
-Name:               & \bf \mfullname                    \\
-College:            & \bf \mcollege                     \\
-Project Title:      & \bf \mtitle \\
+Candidate Number:   & \bf \mcandidate                   \\
+Project Title:      & \bf \mtitle                       \\
 Examination:        & \bf \mexamination, \mdate         \\
-Word Count:         & \bf \mwordcount\footnotemark[1]
-                      (well less than the 12000 limit)  \\
-Project Originator: & \moriginator.                     \\
-Supervisor:         & \msupervisor.                     \\ 
+Word Count:         & \bf \mwordcount\footnotemark[1]   \\
+Code Line Count:    & \bf \mlinecount                   \\
+Project Originator: & \bf \moriginator                  \\
+Supervisor:         & \bf \msupervisor                  \\ 
 \end{tabular}
 }
 \footnotetext[1]{This word count was computed
@@ -68,6 +79,7 @@ by \texttt{detex diss.tex | tr -cd '0-9A-Za-z $\tt\backslash$n' | wc -w}
 
 
 \section*{Original Aims of the Project}
+% At most 100 words
 
 To write a demonstration dissertation\footnote{A normal footnote without the
 complication of being in a table.} using \LaTeX\ to save
@@ -83,23 +95,17 @@ dissertation.
 
 
 \section*{Work Completed}
+% At most 100 words
 
 All that has been completed appears in this dissertation.
 
 \section*{Special Difficulties}
+% At most 100 words
 
 Learning how to incorporate encapulated postscript into a \LaTeX\
 document on both Ubuntu Linux and OS X.
- 
+
 \newpage
-\section*{Declaration}
-
-I, \mfullname{} of \mcollege, being a candidate for Part II of the Computer Science Tripos, hereby declare that this dissertation and the work described in it are my own work, unaided except as may be specified below, and that the dissertation does not contain material that has already been used to any substantial extent for a comparable purpose. \mconsent
-
-\bigskip
-\leftline{Signed}
-\bigskip
-\leftline{Date \today}
 
 \tableofcontents
 
@@ -376,7 +382,7 @@ See the Unix Tools notes at
 \url{http://www.cl.cam.ac.uk/teaching/current-1/UnixTools/materials.html}
 
 
-\chapter{Conclusion}
+\chapter{Conclusions}
 
 I hope that this rough guide to writing a dissertation is \LaTeX\ has
 been helpful and saved you time.
